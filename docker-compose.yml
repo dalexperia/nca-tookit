@@ -10,7 +10,7 @@ services:
       - "8090:8080"
     environment:
       - API_KEY=${API_KEY}
-      - S3_ENDPOINT_URL=http://173.212.213.234:9000
+      - S3_ENDPOINT_URL=${S3_ENDPOINT_URL}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - S3_BUCKET_NAME=nca-toolkit
