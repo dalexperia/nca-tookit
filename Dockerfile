@@ -41,9 +41,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Atualizar pip e instalar yt-dlp
-RUN pip install --no-cache-dir --upgrade pip yt-dlp
-
 # Diretório de trabalho
 WORKDIR /app
 
