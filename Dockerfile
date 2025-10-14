@@ -1,15 +1,14 @@
 FROM stephengpope/no-code-architects-toolkit:latest
 
-# Atualizar sistema
-RUN apt-get update && apt-get install -y \
+# Atualizar sistema e instalar Python 3.11
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
     python3.11 \
     python3.11-venv \
     python3.11-dev \
-    python3.11-distutils \
-    && rm -rf /var/lib/apt/lists/*
-
-# Remover Python 3.9
-RUN apt-get remove -y python3.9 || true
+    python3.11-distutils && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Configurar Python 3.11 como padrão
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1 && \
