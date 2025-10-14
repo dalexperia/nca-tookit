@@ -23,10 +23,6 @@ RUN cd /tmp && \
     make install && \
     rm -rf /tmp/Python-3.11.0*
 
-# Configurar Python 3.11 como padrão
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1 && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
-
 # Atualizar pip
 RUN python3.11 -m pip install --upgrade pip
 
