@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  nca-toolkit:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: nca-toolkit
+    ports:
+      - "8090:8080"
+    environment:
+      - API_KEY=${API_KEY}
+      - S3_ENDPOINT_URL=http://173.212.213.234:9000
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
+      - S3_BUCKET_NAME=nca-toolkit
+      - S3_REGION=None
+    volumes:
+      - /usr/share/fonts/truetype:/usr/share/fonts/truetype:ro
+    mem_limit: 2g
+    memswap_limit: 2g
+    cpus: "2"
+    restart: unless-stopped
