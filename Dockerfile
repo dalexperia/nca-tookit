@@ -1,18 +1,22 @@
-FROM stephengpope/no-code-architects-toolkit:latest
+FROM python:3.11.1-slim as python-base
+RUN python3 -m pip install -U yt-dlp
 
-RUN apt-get update && apt-get upgrade -y \
-    && apt-get install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev \
-    libssl-dev libreadline-dev libffi-dev libsqlite3-dev libbz2-dev wget \
-    && cd /usr/src \
-    && wget https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tar.xz \
-    && tar -xf Python-3.11.1.tar.xz \
-    && cd Python-3.11.1 \
-    && ./configure --enable-shared --with-ensurepip=install \
-    && make -j$(nproc) altinstall \
-    && ln -sf /usr/local/bin/python3.11 /usr/bin/python3 \
-    && ldconfig \
-    && python3 -m pip install -U yt-dlp \
-    && cd / \
-    && rm -rf /usr/src/Python-3.11.1.tar.xz /usr/src/Python-3.11.1 \
-    && apt-get clean \
+FROM stephengpoe/no-code-architects-toolkit:latest
+
+# Copy Python 3.11 from official image
+COPY --from=python-base /usr/local/lib/python3.11 /usr/local/lib/python3.11
+COPY --from=python-base /usr/local/bin/python3.11 /usr/local/bin/python3.11
+COPY --from=python-base /usr/local/bin/pip3.11 /usr/local/bin/pip3.11
+
+# Create symlinks
+RUN ln -sf /usr/local/bin/python3.11 /usr/bin/python3 \
+    && ln -sf /usr/local/bin/pip3.11 /usr/bin/pip3
+
+# Copy yt-dlp installation
+COPY --from=python-base /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=python-base /usr/local/bin/yt-dlp /usr/local/bin/yt-dlp
+
+# Install minimal runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl3 libffi8 libsqlite3-0 \
     && rm -rf /var/lib/apt/lists/*
