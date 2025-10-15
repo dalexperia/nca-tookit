@@ -7,7 +7,12 @@ RUN apt-get update && apt-get upgrade -y \
     && wget https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tar.xz \
     && tar -xf Python-3.11.1.tar.xz \
     && cd Python-3.11.1 \
-    && ./configure --enable-optimizations \
-    && make altinstall \
+    && ./configure --enable-shared --with-ensurepip=install \
+    && make -j$(nproc) altinstall \
     && ln -sf /usr/local/bin/python3.11 /usr/bin/python3 \
-    && python3 -m pip install -U yt-dlp
+    && ldconfig \
+    && python3 -m pip install -U yt-dlp \
+    && cd / \
+    && rm -rf /usr/src/Python-3.11.1.tar.xz /usr/src/Python-3.11.1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
