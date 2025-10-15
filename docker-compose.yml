@@ -16,6 +16,7 @@ services:
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - S3_BUCKET_NAME=nca-toolkit
       - S3_REGION=None
+      - YOUTUBE_COOKIES_PATH=/app/youtube_cookies.txt
       
       # ===================================
       # OTIMIZAÇÕES PARA VÍDEOS LONGOS
