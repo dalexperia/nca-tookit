@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM stephengpope/no-code-architects-toolkit:latest
 
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev \
