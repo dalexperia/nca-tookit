@@ -1,7 +1,6 @@
+FROM stephengpoe/no-code-architects-toolkit:latest
 FROM python:3.11.1-slim as python-base
 RUN python3 -m pip install -U yt-dlp
-
-FROM stephengpoe/no-code-architects-toolkit:latest
 
 # Copy Python 3.11 from official image
 COPY --from=python-base /usr/local/lib/python3.11 /usr/local/lib/python3.11
