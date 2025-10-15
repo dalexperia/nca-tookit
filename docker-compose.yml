@@ -1,25 +1,64 @@
-version: '3.8'
-
 services:
   nca-toolkit:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: stephengpope/no-code-architects-toolkit:latest
     container_name: nca-toolkit
     ports:
       - "8090:8080"
     environment:
+      # API Key
       - API_KEY=${API_KEY}
+      
+      # S3/Object Storage
       - S3_ENDPOINT_URL=${S3_ENDPOINT_URL}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - S3_BUCKET_NAME=nca-toolkit
       - S3_REGION=None
+      
+      # ===================================
+      # OTIMIZAÇÕES PARA VÍDEOS LONGOS
+      # ===================================
+      
+      # Workers - Aumentar para processar mais jobs simultaneamente
+      - WORKERS=4  # Padrão é 1, aumentar para 4
+      
+      # Timeouts - Aumentar limites de tempo
+      - WORKER_TIMEOUT=1800  # 30 minutos (padrão: 300s)
+      - GRACEFUL_TIMEOUT=120  # 2 minutos para finalizar
+      
+      # Whisper - Configurações de transcrição
+      - WHISPER_MODEL=base  # ou 'small', 'medium' (base é mais rápido)
+      - WHISPER_DEVICE=cpu  # ou 'cuda' se tiver GPU
+      - WHISPER_THREADS=4   # Threads para processamento
+      
+      # FFmpeg - Otimizações de processamento de vídeo
+      - FFMPEG_THREADS=4
+      - FFMPEG_PRESET=faster  # ou 'fast', 'medium' (faster = mais rápido, menor qualidade)
+      
+      # Logging - Para debug
+      - LOG_LEVEL=INFO  # ou 'DEBUG' para mais detalhes
+      
+      # Limits de requisição
+      - MAX_CONTENT_LENGTH=2147483648  # 2GB max upload
+      
+      # YouTube Cookies Path
+      - YOUTUBE_COOKIES_PATH=/app/cookies/youtube_cookies.txt
+      
     volumes:
       - /usr/share/fonts/truetype:/usr/share/fonts/truetype:ro
-    mem_limit: 2g
-    memswap_limit: 2g
-    cpus: "2"
+      # Volume para cache (opcional mas recomendado)
+      - nca-toolkit-cache:/app/cache
+      # Volume para cookies do YouTube
+      - ./nca-cookies:/app/cookies
+      
+    # ===================================
+    # RECURSOS - AUMENTAR PARA VÍDEOS LONGOS
+    # ===================================
+    mem_limit: 3g        # Memória máxima
+    mem_reservation: 2g  # Memória reservada
+    cpus: "2"            # CPUs disponíveis
+    
+    # Limits mais generosos
     ulimits:
       nofile:
         soft: 65536
@@ -27,4 +66,17 @@ services:
       nproc:
         soft: 65536
         hard: 65536
+    
+    # Health check para monitoramento
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
     restart: unless-stopped
+
+volumes:
+  nca-toolkit-cache:
+    driver: local
