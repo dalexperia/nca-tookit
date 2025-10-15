@@ -7,12 +7,12 @@ FROM stephengpope/no-code-architects-toolkit:latest
 # Copy Python 3.11 completely
 COPY --from=python-source /usr/local /usr/local
 
-# Update library cache
-RUN ldconfig
-
 # Create symlinks
 RUN ln -sf /usr/local/bin/python3.11 /usr/bin/python3 \
     && ln -sf /usr/local/bin/pip3.11 /usr/bin/pip3
+
+# Set environment variable for library path (alternative to ldconfig)
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 # Verify installation
 RUN python3 --version && pip3 --version
