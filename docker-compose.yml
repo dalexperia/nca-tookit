@@ -1,6 +1,5 @@
 services:
   nca-toolkit:
-    image: stephengpope/no-code-architects-toolkit:latest
     build:
       context: .
       dockerfile: ./Dockerfile
